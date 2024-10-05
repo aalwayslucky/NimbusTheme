@@ -3,7 +3,12 @@
 import { Colord, extend } from "colord";
 import a11yPlugin from "colord/plugins/a11y";
 import harmoniesPlugin from "colord/plugins/harmonies";
-import { getColorTitle, ThemeWithHSLColor, type ShadCnPropritiesType, type themeModes } from './theme';
+import {
+  getColorTitle,
+  type ShadCnPropritiesType,
+  type themeModes,
+  ThemeWithHSLColor,
+} from "./theme";
 
 type Hsl = HslColor;
 // type Hsl = {
@@ -33,7 +38,7 @@ const faker = {
   },
   helpers: {
     arrayElement: <T extends readonly unknown[] | Array<unknown>>(
-      arr: T
+      arr: T,
     ): T[number] => {
       return arr[Math.floor(Math.random() * arr.length)];
     },
@@ -137,7 +142,7 @@ const createColorHarmony = (
   primary: Colord,
   mode: (typeof modes)[number],
   shouldMatch: boolean,
-  isDark?: boolean
+  isDark?: boolean,
 ) => {
   if (mode === "triadic") {
     const [, secondary, accent] = primary.harmonies(mode);
@@ -182,11 +187,9 @@ const createColorHarmony = (
 
       return {
         secondary: clr,
-        accent: shouldMatch
-          ? clr
-          : clr
-              .saturate(faker.number.float({ min: 0.05, max: 0.1 }))
-              .lighten(faker.number.float({ min: 0.05, max: 0.1 })),
+        accent: shouldMatch ? clr : clr
+          .saturate(faker.number.float({ min: 0.05, max: 0.1 }))
+          .lighten(faker.number.float({ min: 0.05, max: 0.1 })),
       };
     }
 
@@ -201,18 +204,18 @@ const createColorHarmony = (
 
     return {
       secondary: clr,
-      accent: shouldMatch
-        ? clr
-        : clr
-            .darken(faker.number.float({ min: 0.05, max: 0.1 }))
-            .saturate(faker.number.float({ min: 0.05, max: 0.1 })),
+      accent: shouldMatch ? clr : clr
+        .darken(faker.number.float({ min: 0.05, max: 0.1 }))
+        .saturate(faker.number.float({ min: 0.05, max: 0.1 })),
     };
   }
 
   throw new Error("Invalid mode");
 };
 
-export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[key: string]: Hsl}} => {
+export const createThemeConfig = (
+  primaryColor?: Hsl,
+): { [key in themeModes]: { [key: string]: Hsl } } => {
   // { [key in themeModes]: { [key in ShadCnPropritiesType]: Hsl } }
   const primaryBase = new Colord(primaryColor ?? createPrimaryColor());
 
@@ -222,7 +225,7 @@ export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[k
   const primaryLight = colordToHsl(primaryLightColord);
   const primaryDark = colordToHsl(primaryDarkColord);
   const primaryLightForeground = colordToHsl(
-    createContrast(primaryLightColord)
+    createContrast(primaryLightColord),
   );
   const primaryDarkForeground = colordToHsl(createContrast(primaryDarkColord));
 
@@ -271,34 +274,34 @@ export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[k
     primaryLightColord,
     harmonyMode,
     shouldMatch,
-    false
+    false,
   );
 
   const secondaryLight = colordToHsl(lightHarmonies.secondary);
   const secondaryLightForeground = colordToHsl(
-    createContrast(lightHarmonies.secondary)
+    createContrast(lightHarmonies.secondary),
   );
 
   const accentLight = colordToHsl(lightHarmonies.accent);
   const accentLightForeground = colordToHsl(
-    createContrast(lightHarmonies.accent)
+    createContrast(lightHarmonies.accent),
   );
 
   const darkHarmonies = createColorHarmony(
     primaryDarkColord,
     harmonyMode,
     shouldMatch,
-    true
+    true,
   );
 
   const secondaryDark = colordToHsl(darkHarmonies.secondary);
   const secondaryDarkForeground = colordToHsl(
-    createContrast(darkHarmonies.secondary)
+    createContrast(darkHarmonies.secondary),
   );
 
   const accentDark = colordToHsl(darkHarmonies.accent);
   const accentDarkForeground = colordToHsl(
-    createContrast(darkHarmonies.accent)
+    createContrast(darkHarmonies.accent),
   );
 
   const destructiveBase = createDestructive();
@@ -311,11 +314,11 @@ export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[k
   };
 
   const destructiveLightForeground = colordToHsl(
-    createContrast(destructiveBase)
+    createContrast(destructiveBase),
   );
 
   const destructiveDarkForeground = colordToHsl(
-    createContrast(new Colord(destructiveDark))
+    createContrast(new Colord(destructiveDark)),
   );
 
   const mutedBaseDeviations = {
@@ -390,6 +393,21 @@ export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[k
       border: borderLight,
       input: borderLight,
       ring: primaryLight,
+      unlocked: backgroundLight,
+      long: accentLight,
+      longForeground: accentLightForeground,
+      longInside: colordToHsl(new Colord(accentLight).darken(0.4)),
+      short: destructiveLight,
+      shortForeground: destructiveLightForeground,
+      shortInside: colordToHsl(new Colord(destructiveLight).darken(0.4)),
+      tp: primaryLight,
+      tpForeground: primaryLightForeground,
+      tpInside: colordToHsl(new Colord(primaryLight).darken(0.4)),
+      tpLight: colordToHsl(new Colord(primaryLight).lighten(0.1)),
+      sl: secondaryLight,
+      slForeground: secondaryLightForeground,
+      slInside: colordToHsl(new Colord(secondaryLight).darken(0.4)),
+      chartBg: backgroundLight,
     },
     dark: {
       background: backgroundDark,
@@ -411,6 +429,21 @@ export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[k
       border: borderDark,
       input: borderDark,
       ring: primaryDark,
+      unlocked: backgroundDark,
+      long: accentDark,
+      longForeground: accentDarkForeground,
+      longInside: colordToHsl(new Colord(accentDark).darken(0.4)),
+      short: destructiveDark,
+      shortForeground: destructiveDarkForeground,
+      shortInside: colordToHsl(new Colord(destructiveDark).darken(0.4)),
+      tp: primaryDark,
+      tpForeground: primaryDarkForeground,
+      tpInside: colordToHsl(new Colord(primaryDark).darken(0.4)),
+      tpLight: colordToHsl(new Colord(primaryDark).lighten(0.1)),
+      sl: secondaryDark,
+      slForeground: secondaryDarkForeground,
+      slInside: colordToHsl(new Colord(secondaryDark).darken(0.4)),
+      chartBg: backgroundDark,
     },
   };
 
@@ -463,24 +496,24 @@ export const createThemeConfig = (primaryColor?: Hsl): {[key in themeModes]: {[k
 // ---
 function toKebabCase(input: string): string {
   return input
-      .replace(/([a-z])([A-Z])/g, '$1-$2')
-      .toLowerCase();
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .toLowerCase();
 }
 
-export function createRandomTheme(primaryColor?: Hsl){
-  const themes = createThemeConfig(primaryColor)
-  let validThemes: {[key: string]: any} = {};
+export function createRandomTheme(primaryColor?: Hsl) {
+  const themes = createThemeConfig(primaryColor);
+  let validThemes: { [key: string]: any } = {};
   for (let [mode, theme] of Object.entries(themes)) {
-    let validTheme: ThemeWithHSLColor[] = []
+    let validTheme: ThemeWithHSLColor[] = [];
     for (let [name, color] of Object.entries(theme)) {
-      let pro = '--'+toKebabCase(name)
+      let pro = "--" + toKebabCase(name);
       validTheme.push({
         title: getColorTitle(pro)!,
         variable: pro as any,
-        color: color
-      })
+        color: color,
+      });
     }
-    validThemes[mode] = validTheme
+    validThemes[mode] = validTheme;
   }
-  return validThemes as {[mode in themeModes]: ThemeWithHSLColor[]}
+  return validThemes as { [mode in themeModes]: ThemeWithHSLColor[] };
 }
